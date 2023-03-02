@@ -6,9 +6,12 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 
+import cz.towns.DatabaseConnection;
 import cz.towns.model.Town;
 import cz.towns.model.TownPart;
 import cz.towns.service.TownService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -18,6 +21,7 @@ public class XMLParser extends Parser {
     private final List<Town> towns;
     private final List<TownPart> townParts;
     private final TownService townService;
+    private static Logger logger = LogManager.getLogger(XMLParser.class);
 
     public XMLParser() {
         this.towns = new ArrayList<>();
@@ -34,6 +38,7 @@ public class XMLParser extends Parser {
             Document doc = dBuilder.parse(inputFile);
             doc.getDocumentElement().normalize();
 
+            logger.info("Parsing file " + fileName);
             parseTownParts(doc);
             parseTowns(doc);
         } catch (Exception e) {
@@ -105,5 +110,6 @@ public class XMLParser extends Parser {
     void saveData() {
         townService.addTowns(towns);
         townService.addTownParts(townParts);
+        logger.info("Saving data in the database");
     }
 }
